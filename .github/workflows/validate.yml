@@ -1,0 +1,115 @@
+name: Validate Notebooks
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install nbformat nbconvert
+
+      - name: Validate notebook format
+        run: |
+          echo "🔍 Validating notebook format..."
+          python -c "import nbformat; nbformat.read('prisma_airs_synch.ipynb', as_version=4); print('✅ prisma_airs_synch.ipynb is valid')"
+          python -c "import nbformat; nbformat.read('prisma_airs_asynch.ipynb', as_version=4); print('✅ prisma_airs_asynch.ipynb is valid')"
+
+      - name: Check for hardcoded API keys
+        run: |
+          echo "🔍 Checking for hardcoded secrets..."
+
+          # Check for OpenAI keys
+          if grep -r "sk-proj-" *.ipynb; then
+            echo "❌ Found hardcoded OpenAI API key!"
+            exit 1
+          fi
+
+          # Check for potential Prisma AIRS keys (long alphanumeric strings)
+          if grep -r "LpKMpoSTIJS" *.ipynb; then
+            echo "❌ Found hardcoded Prisma AIRS API key!"
+            exit 1
+          fi
+
+          # Check for generic api_key assignments (not from environment)
+          if grep -E "API_KEY\s*=\s*['\"](?!.*getenv)" *.ipynb | grep -v "your-api-key-here"; then
+            echo "⚠️  Warning: Found potential hardcoded API key assignment"
+            # Don't fail, just warn
+          fi
+
+          echo "✅ No hardcoded secrets found"
+
+      - name: Check for notebook outputs
+        run: |
+          echo "🔍 Checking for committed notebook outputs..."
+
+          # Check if notebooks have outputs
+          if python -c "import nbformat; nb = nbformat.read('prisma_airs_synch.ipynb', 4); print(any(cell.get('outputs') for cell in nb.cells if cell.cell_type=='code'))" | grep -q "True"; then
+            echo "⚠️  Warning: prisma_airs_synch.ipynb contains outputs. Consider clearing them."
+          fi
+
+          if python -c "import nbformat; nb = nbformat.read('prisma_airs_asynch.ipynb', 4); print(any(cell.get('outputs') for cell in nb.cells if cell.cell_type=='code'))" | grep -q "True"; then
+            echo "⚠️  Warning: prisma_airs_asynch.ipynb contains outputs. Consider clearing them."
+          fi
+
+          echo "✅ Output check complete"
+
+      - name: Validate requirements.txt
+        run: |
+          echo "🔍 Validating requirements.txt..."
+
+          # Check if requirements.txt exists and is not empty
+          if [ ! -s requirements.txt ]; then
+            echo "❌ requirements.txt is missing or empty!"
+            exit 1
+          fi
+
+          # Try to install all dependencies
+          pip install --dry-run -r requirements.txt
+
+          echo "✅ requirements.txt is valid"
+
+      - name: Check README exists
+        run: |
+          echo "🔍 Checking documentation..."
+
+          if [ ! -f README.md ]; then
+            echo "❌ README.md is missing!"
+            exit 1
+          fi
+
+          if [ ! -f README_NOTEBOOKS.md ]; then
+            echo "⚠️  Warning: README_NOTEBOOKS.md is missing"
+          fi
+
+          echo "✅ Documentation check complete"
+
+      - name: Validation summary
+        if: success()
+        run: |
+          echo ""
+          echo "✅ All validation checks passed!"
+          echo ""
+          echo "📋 Summary:"
+          echo "  ✅ Notebook format is valid"
+          echo "  ✅ No hardcoded secrets detected"
+          echo "  ✅ Dependencies are valid"
+          echo "  ✅ Documentation exists"

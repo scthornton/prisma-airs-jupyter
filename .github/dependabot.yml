@@ -1,0 +1,30 @@
+version: 2
+updates:
+  # Enable version updates for pip
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "scthornton"
+    labels:
+      - "dependencies"
+      - "python"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    # Group related updates together
+    groups:
+      openai-updates:
+        patterns:
+          - "openai"
+      anthropic-updates:
+        patterns:
+          - "anthropic"
+      jupyter-updates:
+        patterns:
+          - "jupyter*"
+          - "ipython"

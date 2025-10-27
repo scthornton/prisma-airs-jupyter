@@ -1,0 +1,10 @@
+# Prisma AIRS Testing Notebook Requirements
+
+# Core dependencies
+requests>=2.31.0
+openai>=2.0.0
+anthropic>=0.70.0
+
+# These are typically already installed with Jupyter
+jupyter>=1.0.0
+ipython>=8.0.0
