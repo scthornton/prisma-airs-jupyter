@@ -3,9 +3,8 @@
 ## [Unreleased]
 
 ### Added
-- Jupyter notebooks for Prisma AIRS AI Runtime Security testing
-- Synchronous and asynchronous LLM testing notebooks
-- Integration examples with various LLM providers
-- Comprehensive README and notebook documentation
+- Secure chatbot integrated with Palo Alto Networks Prisma AIRS
+- API and SDK implementations
+- Setup script for easy configuration
 
-[Unreleased]: https://github.com/scthornton/prisma-airs-jupyter/commits/main
+[Unreleased]: https://github.com/scthornton/secure_chatbot/commits/main

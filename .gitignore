@@ -1,82 +1,19 @@
-# Jupyter Notebook
-.ipynb_checkpoints/
-*/.ipynb_checkpoints/*
-*.ipynb_checkpoints
-
-# Environment variables
-.env
-.env.local
-.env.*.local
-*.env
-
-# API Keys and secrets
-*secret*
-*key*
-*token*
-config.json
-credentials.json
-.credentials
-
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# Virtual environments
 venv/
 env/
-ENV/
-.venv
+.env
+*.key
 
-# PyCharm
-.idea/
-
-# VSCode
+# IDE
 .vscode/
-
-# macOS
-.DS_Store
-.AppleDouble
-.LSOverride
-._*
-
-# Windows
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# Output files
-*.log
-*.csv
-*.pkl
-*.pickle
-*.dat
-*.out
-
-# Temporary files
-*.tmp
-*.bak
+.idea/
 *.swp
-*~
+.DS_Store
+
+# Logs
+*.log
 
 # AI tool artifacts
 .claude/
