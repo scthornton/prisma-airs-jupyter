@@ -1,7 +1,7 @@
 # Prisma AIRS Testing Notebook Requirements
 
 # Core dependencies
-requests>=2.31.0
+requests>=2.33.1
 openai>=2.0.0
 anthropic>=0.70.0
 
