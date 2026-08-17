@@ -1,5 +1,5 @@
 # Security Policy
 
-## Secure Chatbot with AIRS Protection
+## Prisma AIRS Jupyter Notebooks
 
 **Email:** scott@perfecxion.ai

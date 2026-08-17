@@ -217,9 +217,9 @@ test_prompt = "Check this link: urlfiltering.paloaltonetworks.com/test-malware"
 
 ## 📚 Documentation
 
-- [Prisma AIRS API Docs](https://pan.dev/prisma-airs/scan/api/)
+- [Prisma AIRS API Docs](https://pan.dev/prisma-airs/api/airuntimesecurity/airuntimesecurityapi)
 - [Scan API Reference](https://pan.dev/prisma-airs/api/airuntimesecurity/pythonsdkusage/)
-- [Management API](https://pan.dev/prisma-airs/api/management/)
+- [Management API](https://pan.dev/prisma-airs/api/airuntimesecurity/prismaairsmanagementapi)
 
 ---
 

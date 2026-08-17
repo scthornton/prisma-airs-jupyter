@@ -7,4 +7,4 @@
 - API and SDK implementations
 - Setup script for easy configuration
 
-[Unreleased]: https://github.com/scthornton/secure_chatbot/commits/main
+[Unreleased]: https://github.com/scthornton/prisma-airs-jupyter/commits/main

@@ -1,6 +1,6 @@
 # Prisma AIRS Jupyter Notebooks
 
-Testing notebooks for [Palo Alto Networks Prisma AI Runtime Security (AIRS)](https://pan.dev/prisma-airs/) - a runtime security scanner for GenAI applications.
+Testing notebooks for [Palo Alto Networks Prisma AI Runtime Security (AIRS)](https://pan.dev/airs) - a runtime security scanner for GenAI applications.
 
 ## 🎯 Overview
 
@@ -144,9 +144,9 @@ test_prompt = "Check this link: urlfiltering.paloaltonetworks.com/test-malware"
 For detailed usage instructions, see [`README_NOTEBOOKS.md`](README_NOTEBOOKS.md)
 
 **External Resources:**
-- [Prisma AIRS API Documentation](https://pan.dev/prisma-airs/scan/api/)
+- [Prisma AIRS API Documentation](https://pan.dev/prisma-airs/api/airuntimesecurity/airuntimesecurityapi)
 - [Scan API Reference](https://pan.dev/prisma-airs/api/airuntimesecurity/pythonsdkusage/)
-- [Management API](https://pan.dev/prisma-airs/api/management/)
+- [Management API](https://pan.dev/prisma-airs/api/airuntimesecurity/prismaairsmanagementapi)
 
 ## 🆘 Troubleshooting
 
@@ -215,7 +215,7 @@ This project is provided as-is for testing and demonstration purposes.
 
 ## 🙏 Acknowledgments
 
-- Built for testing [Palo Alto Networks Prisma AI Runtime Security](https://pan.dev/prisma-airs/)
+- Built for testing [Palo Alto Networks Prisma AI Runtime Security](https://pan.dev/airs)
 - Supports OpenAI and Anthropic LLM providers
 
 ---

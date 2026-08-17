@@ -36,38 +36,74 @@ jobs:
       - name: Check for hardcoded API keys
         run: |
           echo "🔍 Checking for hardcoded secrets..."
+          python - <<'EOF'
+          import glob, json, re, sys
 
-          # Check for OpenAI keys
-          if grep -r "sk-proj-" *.ipynb; then
-            echo "❌ Found hardcoded OpenAI API key!"
-            exit 1
-          fi
+          # This check used to grep for a literal fragment of one real key. That
+          # was wrong twice over: it pasted part of the secret into this file, and
+          # the fragment was one character longer than what actually got committed
+          # (the notebook masks with [:10]), so it never matched and passed on
+          # every push while the key sat in committed output. Match on shape, not
+          # on one known value.
+          PATTERNS = [
+              (re.compile(r"sk-proj-[A-Za-z0-9_-]{10,}"), "OpenAI project key"),
+              (re.compile(r"sk-ant-[A-Za-z0-9_-]{10,}"), "Anthropic key"),
+              (re.compile(r"AKIA[0-9A-Z]{16}"), "AWS access key id"),
+              # Assignment of a long literal to a key/token/secret-ish name, where
+              # the value is not obviously a placeholder or an os.getenv call.
+              (re.compile(
+                  r"""(?ix)
+                  (api[_-]?key|token|secret|password)
+                  \s*[=:]\s*
+                  ["']([A-Za-z0-9]{16,})["']
+                  """), "hardcoded credential assignment"),
+          ]
+          PLACEHOLDER = re.compile(
+              r"(?i)your[_-]?|example|placeholder|redacted|dummy|changeme|xxx|test[_-]?key")
 
-          # Check for potential Prisma AIRS keys (long alphanumeric strings)
-          if grep -r "LpKMpoSTIJS" *.ipynb; then
-            echo "❌ Found hardcoded Prisma AIRS API key!"
-            exit 1
-          fi
+          findings = []
+          for path in sorted(glob.glob("*.ipynb")):
+              nb = json.load(open(path))
+              for idx, cell in enumerate(nb.get("cells", [])):
+                  blob = "".join(cell.get("source", []))
+                  for rx, label in PATTERNS:
+                      for m in rx.finditer(blob):
+                          if PLACEHOLDER.search(m.group(0)):
+                              continue
+                          findings.append(f"{path} cell {idx}: {label}")
 
-          # Check for generic api_key assignments (not from environment)
-          if grep -E "API_KEY\s*=\s*['\"](?!.*getenv)" *.ipynb | grep -v "your-api-key-here"; then
-            echo "⚠️  Warning: Found potential hardcoded API key assignment"
-            # Don't fail, just warn
-          fi
-
-          echo "✅ No hardcoded secrets found"
+          if findings:
+              print("❌ Possible hardcoded secrets:")
+              for f in sorted(set(findings)):
+                  print(f"   {f}")
+              sys.exit(1)
+          print("✅ No hardcoded secrets found")
+          EOF
 
       - name: Check for notebook outputs
         run: |
           echo "🔍 Checking for committed notebook outputs..."
 
-          # Check if notebooks have outputs
-          if python -c "import nbformat; nb = nbformat.read('prisma_airs_synch.ipynb', 4); print(any(cell.get('outputs') for cell in nb.cells if cell.cell_type=='code'))" | grep -q "True"; then
-            echo "⚠️  Warning: prisma_airs_synch.ipynb contains outputs. Consider clearing them."
-          fi
-
-          if python -c "import nbformat; nb = nbformat.read('prisma_airs_asynch.ipynb', 4); print(any(cell.get('outputs') for cell in nb.cells if cell.cell_type=='code'))" | grep -q "True"; then
-            echo "⚠️  Warning: prisma_airs_asynch.ipynb contains outputs. Consider clearing them."
+          # Committed outputs are how a real API key prefix, a profile_id and
+          # several report_ids ended up public in this repo. Outputs are the
+          # actual leak vector, so this fails the build rather than warning.
+          python - <<'EOF'
+          import glob, json, sys
+          dirty = []
+          for path in sorted(glob.glob("*.ipynb")):
+              nb = json.load(open(path))
+              n = sum(len(c.get("outputs", [])) for c in nb.get("cells", [])
+                      if c.get("cell_type") == "code")
+              if n:
+                  dirty.append(f"{path} ({n} output objects)")
+          if dirty:
+              print("❌ Notebooks contain committed outputs:")
+              for d in dirty:
+                  print(f"   {d}")
+              print("   Clear them with: jupyter nbconvert --clear-output --inplace *.ipynb")
+              sys.exit(1)
+          print("✅ No committed notebook outputs")
+          EOF
           fi
 
           echo "✅ Output check complete"
